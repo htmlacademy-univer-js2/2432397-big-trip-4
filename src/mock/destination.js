@@ -1,24 +1,22 @@
 import {getRandomArrayElement, getRandomUUID} from '../utils.js';
 import {CITIES} from '../const.js';
 
+const PICTURES_COUNT = 5;
+
 export function getMockDestination(){
-  const PICTURES_COUNT = Math.floor(Math.random() * 5);
-  const CITY = getRandomArrayElement(CITIES);
-  const CITY_NAME = CITY.name;
-  return [
-    {
-      'id': getRandomUUID(),
-      'description': CITY.description,
-      'name': CITY_NAME,
-      'pictures': getRandomPictures(PICTURES_COUNT, CITY_NAME)
-    }];
+  const city = getRandomArrayElement(CITIES);
+  const cityName = city.name;
+  return{
+    'id': getRandomUUID(),
+    'description': city.description,
+    'cityName': cityName,
+    'pictures': getRandomPictures( cityName)
+  };
 }
 
-function getRandomPictures(picturesCount, cityName){
-  return Array.from({ length: picturesCount }, () => {
-    return {
-      'src': `https://loremflickr.com/248/152/${cityName},city/all`,
-      'description': cityName
-    };
-  });
+function getRandomPictures(cityName){
+  return Array.from({ length: PICTURES_COUNT }, () => ({
+    'src': `https://loremflickr.com/248/152/?random=${Math.floor(Math.random() * PICTURES_COUNT * PICTURES_COUNT)}`,
+    'description': cityName
+  }));
 }

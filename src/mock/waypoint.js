@@ -10,11 +10,11 @@ export function getMockPoint(){
   const isFavourite = Math.floor(Math.random() * 10) % 2 === 0;
   return {
     'id' : getRandomUUID(),
-    'base_price': price,
-    'date_from': date.from,
-    'date_to': date.to,
+    'basePrice': price,
+    'dateFrom': date.from,
+    'dateTo': date.to,
     'destination': getMockDestination(),
-    'is_favorite': isFavourite,
+    'isFavourite': isFavourite,
     'offers': getMockOffers(type),
     'type': type
   };

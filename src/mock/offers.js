@@ -2,21 +2,20 @@ import {getRandomArrayElement, getRandomUUID} from '../utils.js';
 import {OFFERS} from '../const.js';
 
 export function getMockOffers(type){
-  const OFFERS_COUNT = Math.floor(Math.random() * 5);
-  return [
-    {
-      'type': type,
-      'offers': getRandomOffers(OFFERS_COUNT)
-    }];
+  const offersCount = Math.floor(Math.random() * 5 + 1);
+  return {
+    'type': type,
+    'offers': getRandomOffers(offersCount)
+  };
 }
 
 function getRandomOffers(offersCount){
   return Array.from({ length: offersCount }, () => {
-    const OFFER = getRandomArrayElement(OFFERS);
+    const offer = getRandomArrayElement(OFFERS);
     return {
       'id' : getRandomUUID(),
-      'title' : OFFER.title,
-      'price' : OFFER.price
+      'title' : offer.title,
+      'price' : offer.price
     };
   });
 }
