@@ -13,17 +13,23 @@ const containers = {
 };
 
 export default class TripPresenter {
+  constructor(pointsModel) {
+    this.pointsModel = pointsModel;
+  }
+
   listPoints = new PointsListView();
 
   init() {
+    this.tripPoints = [...this.pointsModel.getPoints()];
+
     render(new TripInfoView(), containers.tripInfoContainer, RenderPosition.AFTERBEGIN);
     render(new FilterView(), containers.filterContainer);
     render(new SortView(), containers.eventContainer);
     render(this.listPoints, containers.eventContainer);
-    render(new EditPointView(), this.listPoints.getElement());
+    render(new EditPointView({ point: this.tripPoints[0] }), this.listPoints.getElement());
 
-    for (let i = 0; i < 3; i++) {
-      render(new PointView(), this.listPoints.getElement());
+    for (let i = 1; i < this.tripPoints.length; i++) {
+      render(new PointView({ point: this.tripPoints[i] }), this.listPoints.getElement());
     }
   }
 }
