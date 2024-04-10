@@ -6,15 +6,11 @@ import PointsListView from '../view/points-list-view';
 import EditPointView from '../view/point-edit-view';
 import {render, RenderPosition} from '../render';
 
-const containers = {
-  tripInfoContainer: document.querySelector('.trip-main'),
-  filterContainer: document.querySelector('.trip-controls__filters'),
-  eventContainer: document.querySelector('.trip-events')
-};
 
 export default class TripPresenter {
-  constructor(pointsModel) {
+  constructor(pointsModel, containers) {
     this.pointsModel = pointsModel;
+    this.containers = containers;
   }
 
   listPoints = new PointsListView();
@@ -22,10 +18,10 @@ export default class TripPresenter {
   init() {
     this.tripPoints = [...this.pointsModel.getPoints()];
 
-    render(new TripInfoView(), containers.tripInfoContainer, RenderPosition.AFTERBEGIN);
-    render(new FilterView(), containers.filterContainer);
-    render(new SortView(), containers.eventContainer);
-    render(this.listPoints, containers.eventContainer);
+    render(new TripInfoView(), this.containers.tripInfoContainer, RenderPosition.AFTERBEGIN);
+    render(new FilterView(), this.containers.filterContainer);
+    render(new SortView(), this.containers.eventContainer);
+    render(this.listPoints, this.containers.eventContainer);
     render(new EditPointView({ point: this.tripPoints[0] }), this.listPoints.getElement());
 
     for (let i = 1; i < this.tripPoints.length; i++) {
