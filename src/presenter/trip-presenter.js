@@ -3,33 +3,64 @@ import FilterView from '../view/filter-view';
 import SortView from '../view/sort-view';
 import PointView from '../view/point-view';
 import PointsListView from '../view/points-list-view';
-import EditPointView from '../view/point-edit-view';
-import {render, RenderPosition} from '../render';
+import PointEditView from '../view/point-edit-view';
+import {render, RenderPosition, replace} from '../framework/render.js';
 
-const containers = {
-  tripInfoContainer: document.querySelector('.trip-main'),
-  filterContainer: document.querySelector('.trip-controls__filters'),
-  eventContainer: document.querySelector('.trip-events')
-};
 
 export default class TripPresenter {
-  constructor(pointsModel) {
-    this.pointsModel = pointsModel;
+  #pointsModel = null;
+  #containers = null;
+  #tripPoints = null;
+  #listPoints = new PointsListView();
+  constructor(pointsModel, containers) {
+    this.#pointsModel = pointsModel;
+    this.#containers = containers;
   }
-
-  listPoints = new PointsListView();
 
   init() {
-    this.tripPoints = [...this.pointsModel.getPoints()];
+    this.#tripPoints = [...this.#pointsModel.points];
 
-    render(new TripInfoView(), containers.tripInfoContainer, RenderPosition.AFTERBEGIN);
-    render(new FilterView(), containers.filterContainer);
-    render(new SortView(), containers.eventContainer);
-    render(this.listPoints, containers.eventContainer);
-    render(new EditPointView({ point: this.tripPoints[0] }), this.listPoints.getElement());
+    render(new TripInfoView(), this.#containers.tripInfoContainer, RenderPosition.AFTERBEGIN);
+    render(new FilterView(), this.#containers.filterContainer);
+    render(new SortView(), this.#containers.eventContainer);
+    render(this.#listPoints, this.#containers.eventContainer);
 
-    for (let i = 1; i < this.tripPoints.length; i++) {
-      render(new PointView({ point: this.tripPoints[i] }), this.listPoints.getElement());
-    }
+    this.#tripPoints.forEach((point) => this.#renderPoint(point));
   }
+
+  #renderPoint = (point) => {
+    const escKeyHandler = (evt) => {
+      if (evt.key === 'Escape') {
+        evt.preventDefault();
+        replaceEditToPointView();
+        document.removeEventListener('keydown', escKeyHandler);
+      }
+    };
+
+    const pointComponent = new PointView({point: point, onEditClick: () => {
+      replacePointToEditView();
+      document.addEventListener('keydown', escKeyHandler);
+    }});
+
+    const editPointComponent = new PointEditView({point: point,
+      onSubmitClick: () => {
+        replaceEditToPointView();
+        document.addEventListener('keydown', escKeyHandler);
+      },
+      onRollUpClick: () => {
+        replaceEditToPointView();
+        document.addEventListener('keydown', escKeyHandler);
+      }
+    });
+
+    function replacePointToEditView() {
+      replace(editPointComponent, pointComponent);
+    }
+
+    function replaceEditToPointView() {
+      replace(pointComponent, editPointComponent);
+    }
+
+    render(pointComponent, this.#listPoints.element);
+  };
 }
