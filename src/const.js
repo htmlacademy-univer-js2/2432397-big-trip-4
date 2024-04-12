@@ -1,3 +1,7 @@
+import {getRandomUUID} from './utils';
+import {getMockDestination} from './mock/destination';
+import {getMockOffers} from './mock/offers';
+
 const TYPE_POINTS = ['Taxi', 'Bus', 'Train', 'Ship', 'Drive', 'Flight', 'Check-in', 'Sightseeing', 'Restaurant'];
 
 const PRICES = [90, 20, 80, 140, 100, 40, 110, 70, 130, 50];
@@ -59,6 +63,16 @@ const CITIES = [
   }
 ];
 
+const DEFAULT_POINT = {
+  'id' : null,
+  'basePrice': null,
+  'dateFrom': null,
+  'dateTo': null,
+  'destination': null,
+  'isFavourite': null,
+  'offers': null,
+  'type': null
+};
 
-export { TYPE_POINTS, PRICES, OFFERS, DATES, CITIES };
+export { TYPE_POINTS, PRICES, OFFERS, DATES, CITIES , DEFAULT_POINT};
 
