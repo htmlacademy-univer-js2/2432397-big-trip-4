@@ -5,6 +5,7 @@ import PointView from '../view/point-view';
 import PointsListView from '../view/points-list-view';
 import PointEditView from '../view/point-edit-view';
 import {render, RenderPosition, replace} from '../framework/render.js';
+import EmptyListView from '../view/empty-list-view';
 
 
 export default class TripPresenter {
@@ -20,13 +21,22 @@ export default class TripPresenter {
   init() {
     this.#tripPoints = [...this.#pointsModel.points];
 
-    render(new TripInfoView(), this.#containers.tripInfoContainer, RenderPosition.AFTERBEGIN);
-    render(new FilterView(), this.#containers.filterContainer);
-    render(new SortView(), this.#containers.eventContainer);
-    render(this.#listPoints, this.#containers.eventContainer);
-
-    this.#tripPoints.forEach((point) => this.#renderPoint(point));
+    this.#renderTrip();
   }
+
+  #renderTrip = () => {
+    render(new FilterView(), this.#containers.filterContainer);
+    if (this.#tripPoints.length > 0) {
+      render(new TripInfoView(), this.#containers.tripInfoContainer, RenderPosition.AFTERBEGIN);
+      render(new SortView(), this.#containers.eventContainer);
+      render(this.#listPoints, this.#containers.eventContainer);
+
+      this.#tripPoints.forEach((point) => this.#renderPoint(point));
+    }
+    else{
+      render(new EmptyListView(), this.#containers.eventContainer);
+    }
+  };
 
   #renderPoint = (point) => {
     const escKeyHandler = (evt) => {
