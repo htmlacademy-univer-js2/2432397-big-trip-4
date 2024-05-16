@@ -16,4 +16,7 @@ function getTimeInMinutes(startTime, endTime) {
   return minutes === 0 ? '' : `${minutes}M`;
 }
 
-export { getRandomArrayElement, getRandomUUID, getTimeInHours, getTimeInMinutes};
+function updateItem(items, update) {
+  return items.map((item) => item.id === update.id ? update : item);
+}
+export { getRandomArrayElement, getRandomUUID, getTimeInHours, getTimeInMinutes, updateItem};
