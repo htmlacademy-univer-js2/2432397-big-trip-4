@@ -38,6 +38,7 @@ export default class PointPresenter{
     this.#editPointComponent = new PointEditView({
       point: this.#point,
       onSubmitClick: this.#replaceEditToPointView,
+      //onResetClick Тоже прописать надо
       onRollUpClick: this.#replaceEditToPointView,
     });
 
@@ -66,6 +67,7 @@ export default class PointPresenter{
 
   resetView() {
     if (this.#mode !== MODE.DEFAULT) {
+      this.#editPointComponent.reset(this.#point);
       this.#replaceEditToPointView();
     }
   }
@@ -86,6 +88,7 @@ export default class PointPresenter{
   #escKeyHandler = (evt) => {
     if (evt.key === 'Escape') {
       evt.preventDefault();
+      this.#editPointComponent.reset(this.#point);
       this.#replaceEditToPointView();
     }
   };

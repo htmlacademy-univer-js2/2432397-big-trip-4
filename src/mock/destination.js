@@ -1,16 +1,15 @@
-import {getRandomArrayElement, getRandomUUID} from '../utils.js';
-import {CITIES} from '../const.js';
+import {getRandomUUID} from '../utils.js';
+import {DESTINATIONS} from '../const';
 
 const PICTURES_COUNT = 5;
 
-export function getMockDestination(){
-  const city = getRandomArrayElement(CITIES);
-  const cityName = city.name;
+export function getMockDestination(cityName){
+  const correspondCityData = DESTINATIONS.find((city) => city.name === cityName);
   return{
     'id': getRandomUUID(),
-    'description': city.description,
+    'description': correspondCityData.description,
     'cityName': cityName,
-    'pictures': getRandomPictures( cityName)
+    'pictures': getRandomPictures(cityName)
   };
 }
 
