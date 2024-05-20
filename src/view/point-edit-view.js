@@ -3,6 +3,8 @@ import {DEFAULT_POINT} from '../const';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import {getMockOffers} from '../mock/offers';
 import {getMockDestination} from '../mock/destination';
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
 
 export default class PointEditView extends AbstractStatefulView{
   static parsePointToState(point) {
@@ -15,6 +17,8 @@ export default class PointEditView extends AbstractStatefulView{
 
   #submitClickHandler = null;
   #rollUpClickHandler = null;
+  #datepickerFrom = null;
+  #datepickerTo = null;
   constructor({point = DEFAULT_POINT, onSubmitClick, onRollUpClick}) {
     super();
     this.#submitClickHandler = onSubmitClick;
@@ -30,6 +34,8 @@ export default class PointEditView extends AbstractStatefulView{
     this.element.querySelector('.event__type-group').addEventListener('change', this.#typeChangeHandler);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler);
     //this.element.querySelector('.event__available-offers')?.addEventListener('change', this.#offerChangeHandler);
+
+    this.#setDatepicker();
   }
 
   get template(){
@@ -67,6 +73,74 @@ export default class PointEditView extends AbstractStatefulView{
     this.updateElement({
       destination: getMockDestination(evt.target.value),
     });
+  };
+
+  #setDatepicker = () => {
+    const [dateFromElement, dateToElement] = this.element.querySelectorAll('.event__input--time');
+    const config = {
+      enableTime: true,
+      dateFormat: 'd/m/y H:i',
+      locale: {
+        firstDayOfWeek: 1,
+      },
+      parseDate: function(date) {
+        return flatpickr.parseDate(date, 'Y-m-d\\TH:i');
+      },
+      'time_24hr': true
+    };
+
+    if (this._state.dateFrom) {
+      this.#datepickerFrom = flatpickr(
+        dateFromElement,
+        {
+          ...config,
+          defaultDate: this._state.dateFrom,
+          maxDate: this._state.dateTo,
+          onClose : this.#routePointDateFromCloseHandler,
+        },
+      );
+    }
+
+    if (this._state.dateTo) {
+      this.#datepickerTo = flatpickr(
+        dateToElement,
+        {
+          ...config,
+          defaultDate: this._state.dateTo,
+          minDate: this._state.dateFrom,
+          onClose: this.#routePointDateToCloseHandler,
+        },
+      );
+    }
+  };
+
+
+  #routePointDateFromCloseHandler = ([userDate]) => {
+    this._setState({
+      dateFrom: userDate
+    });
+    this.#datepickerTo.set('minDate', this._state.dateFrom);
+  };
+
+  #routePointDateToCloseHandler = ([userDate]) => {
+    this._setState({
+      dateTo: userDate
+    });
+    this.#datepickerFrom.set('maxDate', this._state.dateTo);
+  };
+
+
+  removeElement = () => {
+    super.removeElement();
+
+    if (this.#datepickerFrom) {
+      this.#datepickerFrom.destroy();
+      this.#datepickerFrom = null;
+    }
+    if (this.#datepickerTo) {
+      this.#datepickerTo.destroy();
+      this.#datepickerTo = null;
+    }
   };
 
   reset(point) {

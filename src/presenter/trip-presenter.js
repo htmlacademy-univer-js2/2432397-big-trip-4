@@ -41,6 +41,7 @@ export default class TripPresenter {
     this.#renderSort();
     render(this.#listPoints, this.#containers.eventContainer);
 
+    this.#sortPoints(this.#currentSortType);
     this.#renderAllPoints();
   };
 
