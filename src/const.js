@@ -3,14 +3,61 @@ const TYPE_POINTS = ['Taxi', 'Bus', 'Train', 'Ship', 'Drive', 'Flight', 'Check-i
 const PRICES = [90, 20, 80, 140, 100, 40, 110, 70, 130, 50];
 
 const OFFERS = [
-  { title: 'Order Uber', price: 40 },
-  { title: 'Add luggage', price: 90 },
-  { title: 'Switch to comfort', price: 35 },
-  { title: 'Rent a car', price: 100 },
-  { title: 'Add breakfast', price: 120 },
-  { title: 'Book tickets', price: 40 },
-  { title: 'Lunch in name', price: 150 }
+  ['taxi', [
+    { title: 'Order Uber', price: 40 },
+    { title: 'Switch to comfort', price: 35 },
+    { title: 'Trip with a dog', price: 55 },
+    { title: 'Drive fast', price: 60 },
+    { title: 'Text communication only', price: 10 },
+    { title: 'Add luggage', price: 90 }
+  ]],
+  ['bus', [
+    { title: 'Trip with a cat', price: 45 },
+    { title: 'Book tickets', price: 30 },
+    { title: 'Add luggage', price: 85 },
+    { title: 'Reclining seat', price: 55 }
+  ]],
+  ['train', [
+    { title: 'Book tickets', price: 40 },
+    { title: 'Add luggage', price: 75 },
+    { title: 'Reclining seat', price: 80 }
+  ]],
+  ['ship', [
+    { title: 'Trip with a pet', price: 100 },
+    { title: 'Add big luggage', price: 105 },
+    { title: 'Book tickets', price: 60 },
+    { title: 'Sleeping place', price: 150 },
+    { title: 'Add breakfast', price: 120 }
+  ]],
+  ['drive', [
+    { title: 'Rent a car', price: 100 },
+    { title: 'Trip with a pet', price: 80 },
+    { title: 'Add luggage', price: 40 }
+  ]],
+  ['flight', [
+    { title: 'Reclining seat', price: 200 },
+    { title: 'Add breakfast', price: 190 },
+    { title: 'Add luggage', price: 105 },
+    { title: 'Flight with a pet', price: 120 }
+  ]],
+  ['check-in', [
+    { title: 'Book tickets', price: 45 },
+    { title: 'Add luggage', price: 75 },
+    { title: 'Add breakfast', price: 110 }
+  ]],
+  ['sightseeing', [
+    { title: 'Lunch in city', price: 150 },
+    { title: 'Choose a speaker', price: 200 },
+    { title: 'To see a secret place', price: 120 }
+  ]],
+  ['restaurant', [
+    { title: 'Table for two', price: 105 },
+    { title: 'Book a table', price: 55 },
+    { title: 'Italian cuisine', price: 35 },
+    { title: 'Japanese cuisine', price: 65 }
+  ]]
 ];
+
 
 
 const DATES = [
@@ -36,7 +83,7 @@ const DATES = [
   }
 ];
 
-const CITIES = [
+const DESTINATIONS = [
   {
     name: 'Chamonix',
     description: 'Chamonix is situated in the French Alps just north of Mont Blanc, the highest mountain in Western Europe. Between the peaks of the Aiguilles Rouges and the notable Aiguille du Midi, it borders both Switzerland and Italy. It is one of the oldest ski resorts in France, popular with alpinists and mountain enthusiasts.'
@@ -78,5 +125,4 @@ const SortTypes = {
   OFFERS: 'offers',
 };
 
-export { TYPE_POINTS, PRICES, OFFERS, DATES, CITIES , DEFAULT_POINT, SortTypes};
-
+export { TYPE_POINTS, PRICES, OFFERS, DATES, DESTINATIONS , DEFAULT_POINT, SortTypes};
