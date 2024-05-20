@@ -1,11 +1,11 @@
-import {getTimeInHours, getTimeInMinutes} from '../utils';
+import {getTimeInDays, getTimeInHours, getTimeInMinutes} from '../utils';
 import dayjs from 'dayjs';
 
 export function createPointTemplate(point) {
   const {dateTo, dateFrom, basePrice, destination, type, offers, isFavourite} = point;
 
+  const days = getTimeInDays(dateFrom, dateTo);
   const hours = getTimeInHours(dateFrom, dateTo);
-
   const minutes = getTimeInMinutes(dateFrom, dateTo);
 
   const activeFavouriteButtonTemplate = isFavourite ? 'event__favorite-btn--active' : '';
@@ -13,18 +13,18 @@ export function createPointTemplate(point) {
   return `
   <li class="trip-events__item">
     <div class="event">
-      <time class="event__date" datetime="2019-03-18">MAR 18</time>
+      <time class="event__date" datetime="${dateFrom}">${dayjs(dateFrom).format('MMM DD')}</time>
       <div class="event__type">
         <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
       </div>
       <h3 class="event__title">${type} ${destination.cityName}</h3>
       <div class="event__schedule">
         <p class="event__time">
-          <time class="event__start-time" datetime=${dateFrom}>${dayjs(dateFrom).format('HH:mm')}</time>
+          <time class="event__start-time" datetime="${dateFrom}">${dayjs(dateFrom).format('HH:mm')}</time>
           &mdash;
-          <time class="event__end-time" datetime=${dateTo}>${dayjs(dateTo).format('HH:mm')}</time>
+          <time class="event__end-time" datetime="${dateTo}">${dayjs(dateTo).format('HH:mm')}</time>
         </p>
-        <p class="event__duration">${hours} ${minutes}</p>
+        <p class="event__duration">${days} ${hours} ${minutes}</p>
       </div>
       <p class="event__price">
         &euro;&nbsp;<span class="event__price-value">${basePrice}</span>

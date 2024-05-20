@@ -6,8 +6,13 @@ function getRandomArrayElement(array) {
 function getRandomUUID(){
   return crypto.randomUUID();
 }
+
+function getTimeInDays(startTime, endTime) {
+  const days = dayjs(endTime).diff(dayjs(startTime), 'days');
+  return days === 0 ? '' : `${days}D`;
+}
 function getTimeInHours(startTime, endTime) {
-  const hours = dayjs(endTime).diff(dayjs(startTime), 'hours');
+  const hours = dayjs(endTime).diff(dayjs(startTime), 'hours') % 24;
   return hours === 0 ? '' : `${hours}H`;
 }
 
@@ -37,6 +42,7 @@ function sortPointPrice(points) {
 export {
   getRandomArrayElement,
   getRandomUUID,
+  getTimeInDays,
   getTimeInHours,
   getTimeInMinutes,
   updateItem,
