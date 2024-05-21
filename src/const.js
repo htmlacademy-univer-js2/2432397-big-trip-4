@@ -118,4 +118,49 @@ const SortTypes = {
   OFFERS: 'offers',
 };
 
-export { TYPE_POINTS, PRICES, OFFERS, DATES, DESTINATIONS , DEFAULT_POINT, SortTypes};
+const FilterType = {
+  EVERYTHING: 'everything',
+  FUTURE: 'future',
+  PRESENT: 'present',
+  PAST: 'past',
+};
+
+const FilterMessage = {
+  'everything': 'Click New Event to create your first point',
+  'future': 'There are no future events now',
+  'present': 'There are no present events now',
+  'past': 'There are no past events now',
+};
+
+const UserAction = {
+  UPDATE_TASK: 'UPDATE_TASK',
+  ADD_TASK: 'ADD_TASK',
+  DELETE_TASK: 'DELETE_TASK',
+};
+
+const UpdateType = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
+};
+
+const Mode = {
+  DEFAULT: 'DEFAULT',
+  EDITING: 'EDITING',
+  CREATING: 'CREATING',
+};
+
+export {
+  TYPE_POINTS,
+  PRICES,
+  OFFERS,
+  DATES,
+  DESTINATIONS,
+  DEFAULT_POINT,
+  SortTypes,
+  FilterType,
+  FilterMessage,
+  UserAction,
+  UpdateType,
+  Mode
+};

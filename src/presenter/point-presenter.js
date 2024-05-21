@@ -1,8 +1,10 @@
 import PointView from '../view/point-view';
 import PointEditView from '../view/point-edit-view';
 import {render, replace, remove} from '../framework/render';
+import {UserAction, UpdateType} from '../const.js';
+import {isDatesEqual} from '../utils';
 
-const MODE = {
+const POINT_MODE = {
   DEFAULT: 'DEFAULT',
   EDITING: 'EDITING'
 };
@@ -16,7 +18,7 @@ export default class PointPresenter{
   #handleModeChange = null;
   #handleDataChange = null;
 
-  #mode = MODE.DEFAULT;
+  #mode = POINT_MODE.DEFAULT;
   constructor({container, onDataChange, onModeChange}) {
     this.#container = container;
     this.#handleDataChange = onDataChange;
@@ -37,8 +39,7 @@ export default class PointPresenter{
 
     this.#editPointComponent = new PointEditView({
       point: this.#point,
-      onSubmitClick: this.#replaceEditToPointView,
-      //onResetClick Тоже прописать надо
+      onSaveClick: this.#handleEditPointSave,
       onRollUpClick: this.#replaceEditToPointView,
     });
 
@@ -48,11 +49,11 @@ export default class PointPresenter{
       return;
     }
 
-    if (this.#mode === MODE.DEFAULT) {
+    if (this.#mode === POINT_MODE.DEFAULT) {
       replace(this.#pointComponent, prevPointComponent);
     }
 
-    if (this.#mode === MODE.EDITING) {
+    if (this.#mode === POINT_MODE.EDITING) {
       replace(this.#editPointComponent, prevEditPointComponent);
     }
 
@@ -66,7 +67,7 @@ export default class PointPresenter{
   }
 
   resetView() {
-    if (this.#mode !== MODE.DEFAULT) {
+    if (this.#mode !== POINT_MODE.DEFAULT) {
       this.#editPointComponent.reset(this.#point);
       this.#replaceEditToPointView();
     }
@@ -76,13 +77,13 @@ export default class PointPresenter{
     replace(this.#editPointComponent, this.#pointComponent);
     document.addEventListener('keydown', this.#escKeyHandler);
     this.#handleModeChange();
-    this.#mode = MODE.EDITING;
+    this.#mode = POINT_MODE.EDITING;
   };
 
   #replaceEditToPointView = () => {
     replace(this.#pointComponent, this.#editPointComponent);
     document.removeEventListener('keydown', this.#escKeyHandler);
-    this.#mode = MODE.DEFAULT;
+    this.#mode = POINT_MODE.DEFAULT;
   };
 
   #escKeyHandler = (evt) => {
@@ -94,6 +95,23 @@ export default class PointPresenter{
   };
 
   #handleFavouriteClick = () => {
-    this.#handleDataChange({...this.#point, isFavourite: !this.#point.isFavourite});
+    this.#handleDataChange(
+      UserAction.UPDATE_TASK,
+      UpdateType.MINOR,
+      {...this.#point, isFavourite: !this.#point.isFavourite}
+    );
+  };
+
+  #handleEditPointSave = (updatedPoint) => {
+    this.#replaceEditToPointView();
+    const isMinorUpdate = isDatesEqual(updatedPoint.dateTo, this.#point.dateTo)
+      || isDatesEqual(updatedPoint.dateFrom, this.#point.dateFrom)
+      || updatedPoint.price === this.#point.price;
+
+    this.#handleDataChange(
+      UserAction.UPDATE_TASK,
+      isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
+      updatedPoint,
+    );
   };
 }

@@ -21,10 +21,6 @@ function getTimeInMinutes(startTime, endTime) {
   return minutes === 0 ? '' : `${minutes}M`;
 }
 
-function updateItem(items, update) {
-  return items.map((item) => item.id === update.id ? update : item);
-}
-
 function sortPointDay(points) {
   return points.sort((firstPoint, secondPoint) => new Date(firstPoint.dateFrom) - new Date(secondPoint.dateTo));
 }
@@ -39,14 +35,18 @@ function sortPointPrice(points) {
   return points.sort((firstPoint, secondPoint) => secondPoint.basePrice - firstPoint.basePrice);
 }
 
+function isDatesEqual(dateA, dateB) {
+  return (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'D');
+}
+
 export {
   getRandomArrayElement,
   getRandomUUID,
   getTimeInDays,
   getTimeInHours,
   getTimeInMinutes,
-  updateItem,
   sortPointTime,
   sortPointPrice,
   sortPointDay,
+  isDatesEqual
 };
