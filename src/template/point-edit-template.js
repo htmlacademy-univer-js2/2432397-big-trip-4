@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
-import {DESTINATIONS, TYPE_POINTS} from '../const';
+import {DESTINATIONS, POINT_MODE, TYPE_POINTS} from '../const';
 
-export function createPointEditTemplate(point){
+export function createPointEditTemplate(point, currentMode){
   const { type, basePrice, dateFrom, dateTo, destination, offers } = point;
 
   const { cityName, description, pictures } = destination;
@@ -36,15 +36,15 @@ export function createPointEditTemplate(point){
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        <button class="event__reset-btn" type="reset">Cancel</button>
+        <button class="event__reset-btn" type="reset">${currentMode === POINT_MODE.EDITING ? 'Delete' : 'Cancel'}</button>
         <button class="event__rollup-btn" type="button">
-                    <span class="visually-hidden">Open event</span>
+        <span class="visually-hidden">Open event</span>
       </header>
       <section class="event__details">
         ${createEditPointOfferTemplate(offers.offers)}
 
         <section class="event__section  event__section--destination">
-          <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+          <h3 class="event__section-title  event__section-title--destination">${description ? 'Destination' : ''}</h3>
           <p class="event__destination-description">${description}</p>
 
           ${createEditPointPhotoTemplate(pictures)}

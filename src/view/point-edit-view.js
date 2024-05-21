@@ -1,5 +1,5 @@
 import {createPointEditTemplate} from '../template/point-edit-template';
-import {DEFAULT_POINT} from '../const';
+import {DEFAULT_POINT, POINT_MODE} from '../const';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import {getMockOffers} from '../mock/offers';
 import {getMockDestination} from '../mock/destination';
@@ -17,12 +17,16 @@ export default class PointEditView extends AbstractStatefulView{
 
   #saveClickHandler = null;
   #rollUpClickHandler = null;
+  #deleteClickHandler = null;
   #datepickerFrom = null;
   #datepickerTo = null;
-  constructor({point = DEFAULT_POINT, onSaveClick: onSaveClick, onRollUpClick}) {
+  #mode = null;
+  constructor({point = DEFAULT_POINT, onSaveClick, onDeleteClick, onRollUpClick, mode = POINT_MODE.EDITING}) {
     super();
     this.#saveClickHandler = onSaveClick;
+    this.#deleteClickHandler = onDeleteClick;
     this.#rollUpClickHandler = onRollUpClick;
+    this.#mode = mode;
     this._setState(PointEditView.parsePointToState(point));
     this._restoreHandlers();
   }
@@ -30,6 +34,8 @@ export default class PointEditView extends AbstractStatefulView{
   _restoreHandlers() {
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editPointRollUpHandler);
     this.element.querySelector('form').addEventListener('submit', this.#editPointSaveHandler);
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#editPointDeleteHandler);
+
     this.element.querySelector('.event__input--price').addEventListener('change', this.#priceChangeHandler);
     this.element.querySelector('.event__type-group').addEventListener('change', this.#typeChangeHandler);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler);
@@ -39,7 +45,7 @@ export default class PointEditView extends AbstractStatefulView{
   }
 
   get template(){
-    return createPointEditTemplate(this._state);
+    return createPointEditTemplate(this._state, this.#mode);
   }
 
   #editPointRollUpHandler = (evt) => {
@@ -50,6 +56,11 @@ export default class PointEditView extends AbstractStatefulView{
   #editPointSaveHandler = (evt) => {
     evt.preventDefault();
     this.#saveClickHandler(PointEditView.parseStateToPoint(this._state));
+  };
+
+  #editPointDeleteHandler = (evt) => {
+    evt.preventDefault();
+    this.#deleteClickHandler(PointEditView.parseStateToPoint(this._state));
   };
 
   #priceChangeHandler = (evt) => {
@@ -113,7 +124,6 @@ export default class PointEditView extends AbstractStatefulView{
       );
     }
   };
-
 
   #routePointDateFromCloseHandler = ([userDate]) => {
     this._setState({

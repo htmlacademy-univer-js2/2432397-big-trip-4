@@ -144,7 +144,7 @@ const UpdateType = {
   MAJOR: 'MAJOR',
 };
 
-const Mode = {
+const POINT_MODE = {
   DEFAULT: 'DEFAULT',
   EDITING: 'EDITING',
   CREATING: 'CREATING',
@@ -162,5 +162,5 @@ export {
   FilterMessage,
   UserAction,
   UpdateType,
-  Mode
+  POINT_MODE
 };
