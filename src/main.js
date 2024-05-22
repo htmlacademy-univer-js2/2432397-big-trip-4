@@ -8,9 +8,9 @@ const containers = {
   filterContainer: document.querySelector('.trip-controls__filters'),
   eventContainer: document.querySelector('.trip-events')
 };
-
+const addPointButton = document.querySelector('.trip-main__event-add-btn');
 
 const pointsModel = new PointsModel();
 const filterModel = new FilterModel();
-const tripPresenter = new TripPresenter(pointsModel, filterModel, containers);
+const tripPresenter = new TripPresenter(pointsModel, filterModel, containers, addPointButton);
 tripPresenter.init();

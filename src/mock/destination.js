@@ -19,3 +19,12 @@ function getRandomPictures(cityName){
     'description': cityName
   }));
 }
+
+export function getDefaultDestination() {
+  return {
+    'id': null,
+    'description': null,
+    'cityName' : '',
+    'pictures' : null,
+  };
+}

@@ -1,10 +1,11 @@
 import {createPointEditTemplate} from '../template/point-edit-template';
-import {DEFAULT_POINT, POINT_MODE} from '../const';
+import {POINT_MODE} from '../const';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import {getMockOffers} from '../mock/offers';
 import {getMockDestination} from '../mock/destination';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
+import {getDefaultPoint} from '../mock/waypoint';
 
 export default class PointEditView extends AbstractStatefulView{
   static parsePointToState(point) {
@@ -21,7 +22,7 @@ export default class PointEditView extends AbstractStatefulView{
   #datepickerFrom = null;
   #datepickerTo = null;
   #mode = null;
-  constructor({point = DEFAULT_POINT, onSaveClick, onDeleteClick, onRollUpClick, mode = POINT_MODE.EDITING}) {
+  constructor({point = getDefaultPoint(), onSaveClick, onDeleteClick, onRollUpClick, mode = POINT_MODE.EDITING}) {
     super();
     this.#saveClickHandler = onSaveClick;
     this.#deleteClickHandler = onDeleteClick;
@@ -32,7 +33,9 @@ export default class PointEditView extends AbstractStatefulView{
   }
 
   _restoreHandlers() {
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editPointRollUpHandler);
+    if (this.#mode === POINT_MODE.EDITING) {
+      this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editPointRollUpHandler);
+    }
     this.element.querySelector('form').addEventListener('submit', this.#editPointSaveHandler);
     this.element.querySelector('.event__reset-btn').addEventListener('click', this.#editPointDeleteHandler);
 

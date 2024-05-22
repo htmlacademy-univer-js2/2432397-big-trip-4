@@ -99,16 +99,6 @@ const DESTINATIONS = [
   }
 ];
 
-const DEFAULT_POINT = {
-  'id' : null,
-  'basePrice': null,
-  'dateFrom': null,
-  'dateTo': null,
-  'destination': null,
-  'isFavourite': null,
-  'offers': null,
-  'type': null
-};
 
 const SortTypes = {
   DAY: 'day',
@@ -156,7 +146,6 @@ export {
   OFFERS,
   DATES,
   DESTINATIONS,
-  DEFAULT_POINT,
   SortTypes,
   FilterType,
   FilterMessage,

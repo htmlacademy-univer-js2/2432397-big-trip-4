@@ -7,6 +7,7 @@ import PointPresenter from './point-presenter';
 import {sortPointTime, sortPointDay, sortPointPrice, filter} from '../utils';
 import {SortTypes, UpdateType, UserAction} from '../const';
 import FilterPresenter from './filter-presenter';
+import NewPointPresenter from './new-point-presenter';
 
 
 export default class TripPresenter {
@@ -16,6 +17,7 @@ export default class TripPresenter {
   #pointPresenters = new Map();
   #filterModel = null;
   #filterPresenter = null;
+  #newPointPresenter = null;
   #currentSortType = SortTypes.DAY;
   #filterType = null;
 
@@ -23,12 +25,16 @@ export default class TripPresenter {
   #emptyListComponent = null;
   #tripInfoComponent = null;
 
-  constructor(pointsModel, filterModel, containers) {
+  #addPointButton = null;
+
+  constructor(pointsModel, filterModel, containers, addPointButton) {
     this.#pointsModel = pointsModel;
     this.#filterModel = filterModel;
     this.#containers = containers;
+    this.#addPointButton = addPointButton;
     this.#pointsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
+    this.#addPointButton.addEventListener('click', this.#handleCreateNewPoint);
   }
 
   get points() {
@@ -108,16 +114,16 @@ export default class TripPresenter {
     this.points.forEach((point) => this.#renderPoint(point));
   };
 
-  #handleSortTypeChange = (sortType) => {
-    if (this.#currentSortType === sortType) {
-      return;
-    }
+  #renderNewPoint() {
+    this.#newPointPresenter = new NewPointPresenter({
+      container: this.#listPoints.element,
+      onDataChange: this.#handleViewAction,
+      addPointButton: this.#addPointButton,
+    });
+    this.#newPointPresenter.init();
+    //this.#pointPresenters.forEach((presenter) => presenter.resetView());
+  }
 
-    this.#currentSortType = sortType;
-
-    this.#clearTrip();
-    this.#renderTrip();
-  };
 
   #clearTrip = ({ resetSortType = false } = {}) => {
     this.#pointPresenters.forEach((presenter) => presenter.destroy());
@@ -130,10 +136,33 @@ export default class TripPresenter {
     remove(this.#sortComponent);
 
     this.#filterPresenter.destroy();
+    if (this.#newPointPresenter){
+      this.#newPointPresenter.destroy();
+    }
 
     if (resetSortType) {
       this.#currentSortType = SortTypes.DAY;
     }
+    if (resetFilterType) {
+      //как то обновить фильтры
+    }
+  };
+
+  #handleSortTypeChange = (sortType) => {
+    if (this.#currentSortType === sortType) {
+      return;
+    }
+
+    this.#currentSortType = sortType;
+
+    this.#clearTrip();
+    this.#renderTrip();
+  };
+
+  #handleCreateNewPoint = (evt) => {
+    evt.preventDefault();
+    this.#renderNewPoint();
+    this.#addPointButton.disabled = true;
   };
 
   #handleViewAction = (actionType, updateType, updatedPoint) => {
