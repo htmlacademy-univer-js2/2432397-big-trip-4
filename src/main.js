@@ -1,5 +1,6 @@
 import TripPresenter from './presenter/trip-presenter';
 import PointsModel from './model/points-model.js';
+import FilterModel from './model/filter-model';
 
 
 const containers = {
@@ -10,5 +11,6 @@ const containers = {
 
 
 const pointsModel = new PointsModel();
-const tripPresenter = new TripPresenter(pointsModel, containers);
+const filterModel = new FilterModel();
+const tripPresenter = new TripPresenter(pointsModel, filterModel, containers);
 tripPresenter.init();

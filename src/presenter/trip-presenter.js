@@ -1,44 +1,51 @@
 import TripInfoView from '../view/trip-info-view';
-import FilterView from '../view/filter-view';
 import SortView from '../view/sort-view';
 import PointsListView from '../view/points-list-view';
 import {remove, render, RenderPosition} from '../framework/render.js';
 import EmptyListView from '../view/empty-list-view';
 import PointPresenter from './point-presenter';
-import {sortPointTime, sortPointDay, sortPointPrice} from '../utils';
+import {sortPointTime, sortPointDay, sortPointPrice, filter} from '../utils';
 import {SortTypes, UpdateType, UserAction} from '../const';
+import FilterPresenter from './filter-presenter';
 
 
 export default class TripPresenter {
-  #pointsModel = null;
   #containers = null;
   #listPoints = new PointsListView();
+  #pointsModel = null;
   #pointPresenters = new Map();
+  #filterModel = null;
+  #filterPresenter = null;
   #currentSortType = SortTypes.DAY;
+  #filterType = null;
 
   #sortComponent = null;
   #emptyListComponent = null;
   #tripInfoComponent = null;
 
-  constructor(pointsModel, containers) {
+  constructor(pointsModel, filterModel, containers) {
     this.#pointsModel = pointsModel;
+    this.#filterModel = filterModel;
     this.#containers = containers;
     this.#pointsModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
   get points() {
+    this.#filterType = this.#filterModel.filterType;
     const points = this.#pointsModel.points;
+    const filteredPoints = filter[this.#filterType](points);
 
     switch(this.#currentSortType) {
       case SortTypes.DAY:
-        return sortPointDay([...points]);
+        return sortPointDay([...filteredPoints]);
       case SortTypes.TIME:
-        return sortPointTime([...points]);
+        return sortPointTime([...filteredPoints]);
       case SortTypes.PRICE:
-        return sortPointPrice([...points]);
+        return sortPointPrice([...filteredPoints]);
     }
 
-    return points;
+    return filteredPoints;
   }
 
   init() {
@@ -46,7 +53,7 @@ export default class TripPresenter {
   }
 
   #renderTrip = () => {
-    render(new FilterView(), this.#containers.filterContainer);
+    this.#renderFilter();
 
     if (this.points.length === 0) {
       this.#renderEmptyList();
@@ -60,6 +67,15 @@ export default class TripPresenter {
     this.#renderAllPoints();
   };
 
+  #renderFilter = () => {
+    this.#filterPresenter = new FilterPresenter({
+      filterContainer: this.#containers.filterContainer,
+      filterModel: this.#filterModel,
+      pointsModel: this.#pointsModel,
+    });
+    this.#filterPresenter.init();
+  };
+
   #renderPoint = (point) => {
     const pointPresenter = new PointPresenter({
       container: this.#listPoints.element,
@@ -71,8 +87,8 @@ export default class TripPresenter {
   };
 
   #renderEmptyList = () => {
-    this.#emptyListComponent = new EmptyListView();
-    render(new EmptyListView(), this.#containers.eventContainer);
+    this.#emptyListComponent = new EmptyListView(this.#filterType);
+    render(this.#emptyListComponent, this.#containers.eventContainer);
   };
 
   #renderSort() {
@@ -107,11 +123,13 @@ export default class TripPresenter {
     this.#pointPresenters.forEach((presenter) => presenter.destroy());
     this.#pointPresenters.clear();
 
-    remove(this.#emptyListComponent);
+    if(this.#emptyListComponent){
+      remove(this.#emptyListComponent);
+    }
     remove(this.#tripInfoComponent);
     remove(this.#sortComponent);
 
-    //this.#filterPresenter.destroy(); это пока оставить закоммент
+    this.#filterPresenter.destroy();
 
     if (resetSortType) {
       this.#currentSortType = SortTypes.DAY;
