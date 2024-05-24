@@ -70,7 +70,7 @@ export default class PointEditView extends AbstractStatefulView{
     evt.preventDefault();
     this._setState({
       ...this._state.point,
-      basePrice: evt.target.value
+      basePrice: evt.target.valueAsNumber
     });
   };
 
@@ -88,6 +88,33 @@ export default class PointEditView extends AbstractStatefulView{
       destination: getMockDestination(evt.target.value),
     });
   };
+
+  // #destinationChangeHandler = (evt) => {
+  //   const selectedDestination = this.#pointDestinations
+  //     .find((pointDestination) => pointDestination.cityName === evt.target.value);
+  //
+  //   const selectedDestinationId = (selectedDestination)
+  //     ? selectedDestination.id
+  //     : null;
+  //
+  //   this.updateElement({
+  //     point: {
+  //       ...this._state.point,
+  //       destination: selectedDestinationId
+  //     }
+  //   });
+  // };
+
+  // #offerChangeHandler = () => {
+  //   const checkedBoxes = Array.from(this.element.querySelectorAll('.event__offer-checkbox:checked'));
+  //
+  //   this._setState({
+  //     point: {
+  //       ...this._state.point,
+  //       offers: checkedBoxes.map((element) => element.dataset.offerId)
+  //     }
+  //   });
+  // };
 
   #setDatepicker = () => {
     const [dateFromElement, dateToElement] = this.element.querySelectorAll('.event__input--time');

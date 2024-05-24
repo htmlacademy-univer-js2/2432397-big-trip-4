@@ -5,7 +5,7 @@ import {remove, render, RenderPosition} from '../framework/render.js';
 import EmptyListView from '../view/empty-list-view';
 import PointPresenter from './point-presenter';
 import {sortPointTime, sortPointDay, sortPointPrice, filter} from '../utils';
-import {SortTypes, UpdateType, UserAction} from '../const';
+import {FilterType, SortTypes, UpdateType, UserAction} from '../const';
 import FilterPresenter from './filter-presenter';
 import NewPointPresenter from './new-point-presenter';
 
@@ -120,6 +120,7 @@ export default class TripPresenter {
       onDataChange: this.#handleViewAction,
       addPointButton: this.#addPointButton,
     });
+    this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
     this.#newPointPresenter.init();
     //this.#pointPresenters.forEach((presenter) => presenter.resetView());
   }
@@ -142,9 +143,6 @@ export default class TripPresenter {
 
     if (resetSortType) {
       this.#currentSortType = SortTypes.DAY;
-    }
-    if (resetFilterType) {
-      //как то обновить фильтры
     }
   };
 
