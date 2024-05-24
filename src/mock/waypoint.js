@@ -1,7 +1,8 @@
 import {getRandomArrayElement, getRandomUUID} from '../utils.js';
 import {DESTINATIONS, DATES, PRICES, TYPE_POINTS} from '../const.js';
 import {getMockOffers} from './offers.js';
-import {getMockDestination} from './destination.js';
+import {getDefaultDestination, getMockDestination} from './destination.js';
+import dayjs from 'dayjs';
 
 export function getMockPoint(){
   const date = getRandomArrayElement(DATES);
@@ -18,5 +19,18 @@ export function getMockPoint(){
     'isFavourite': isFavourite,
     'offers': getMockOffers(type),
     'type': type
+  };
+}
+export function getDefaultPoint() {
+  const defaultType = 'Flight';
+  return{
+    'id': getRandomUUID(),
+    'basePrice': 0,
+    'dateFrom': dayjs().format('YYYY/MM/DDTHH:mm'),
+    'dateTo': dayjs().format(''),
+    'destination': getDefaultDestination(),
+    'isFavourite': false,
+    'offers': getMockOffers(defaultType),
+    'type': defaultType
   };
 }

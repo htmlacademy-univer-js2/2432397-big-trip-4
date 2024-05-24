@@ -60,10 +60,10 @@ const OFFERS = [
 
 const DATES = [
   {
-    from: '2024-03-17T10:30', to: '2024-03-18T16:00'
+    from: '2025-03-17T10:30', to: '2025-03-18T16:00'
   },
   {
-    from: '2024-03-18T16:20', to: '2024-03-18T17:00'
+    from: '2024-05-22T16:20', to: '2024-05-23T17:00'
   },
   {
     from: '2024-03-16T14:20', to: '2024-03-16T15:00'
@@ -99,16 +99,6 @@ const DESTINATIONS = [
   }
 ];
 
-const DEFAULT_POINT = {
-  'id' : null,
-  'basePrice': null,
-  'dateFrom': null,
-  'dateTo': null,
-  'destination': null,
-  'isFavourite': null,
-  'offers': null,
-  'type': null
-};
 
 const SortTypes = {
   DAY: 'day',
@@ -118,4 +108,48 @@ const SortTypes = {
   OFFERS: 'offers',
 };
 
-export { TYPE_POINTS, PRICES, OFFERS, DATES, DESTINATIONS , DEFAULT_POINT, SortTypes};
+const FilterType = {
+  EVERYTHING: 'everything',
+  FUTURE: 'future',
+  PRESENT: 'present',
+  PAST: 'past',
+};
+
+const FilterMessage = {
+  'everything': 'Click New Event to create your first point',
+  'future': 'There are no future events now',
+  'present': 'There are no present events now',
+  'past': 'There are no past events now',
+};
+
+const UserAction = {
+  UPDATE_TASK: 'UPDATE_TASK',
+  ADD_TASK: 'ADD_TASK',
+  DELETE_TASK: 'DELETE_TASK',
+};
+
+const UpdateType = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
+};
+
+const POINT_MODE = {
+  DEFAULT: 'DEFAULT',
+  EDITING: 'EDITING',
+  CREATING: 'CREATING',
+};
+
+export {
+  TYPE_POINTS,
+  PRICES,
+  OFFERS,
+  DATES,
+  DESTINATIONS,
+  SortTypes,
+  FilterType,
+  FilterMessage,
+  UserAction,
+  UpdateType,
+  POINT_MODE
+};
