@@ -18,6 +18,8 @@ export default class TripPresenter {
   #filterModel = null;
   #filterPresenter = null;
   #newPointPresenter = null;
+  #offersModel = null;
+  #destinationsModel = null;
   #currentSortType = SortTypes.DAY;
   #filterType = null;
 
@@ -27,8 +29,13 @@ export default class TripPresenter {
 
   #addPointButton = null;
 
-  constructor(pointsModel, filterModel, containers, addPointButton) {
+  #isLoading = true;
+  #isLoadingError = false;
+
+  constructor({pointsModel, offersModel, destinationsModel, filterModel, containers, addPointButton}) {
     this.#pointsModel = pointsModel;
+    this.#offersModel = offersModel;
+    this.#destinationsModel = destinationsModel;
     this.#filterModel = filterModel;
     this.#containers = containers;
     this.#addPointButton = addPointButton;
@@ -59,6 +66,16 @@ export default class TripPresenter {
   }
 
   #renderTrip = () => {
+    if (this.#isLoading) {
+      this.#renderEmptyList({isLoading: true});
+      return;
+    }
+
+    if (this.#isLoadingError) {
+      this.#renderEmptyList({isLoadingError: true});
+      return;
+    }
+
     this.#renderFilter();
 
     if (this.points.length === 0) {
@@ -85,6 +102,8 @@ export default class TripPresenter {
   #renderPoint = (point) => {
     const pointPresenter = new PointPresenter({
       container: this.#listPoints.element,
+      destinationsModel: this.#destinationsModel,
+      offersModel: this.#offersModel,
       onDataChange: this.#handleViewAction,
       onModeChange: this.#handleModeChange
     });
@@ -92,8 +111,12 @@ export default class TripPresenter {
     this.#pointPresenters.set(point.id, pointPresenter);
   };
 
-  #renderEmptyList = () => {
-    this.#emptyListComponent = new EmptyListView(this.#filterType);
+  #renderEmptyList = ({isLoading = false, isLoadingError = false} = {}) => {
+    this.#emptyListComponent = new EmptyListView({
+      currentFilterType : this.#filterType,
+      isLoading,
+      isLoadingError,
+    });
     render(this.#emptyListComponent, this.#containers.eventContainer);
   };
 
@@ -106,7 +129,7 @@ export default class TripPresenter {
   }
 
   #renderTripInfo(){
-    this.#tripInfoComponent = new TripInfoView();
+    this.#tripInfoComponent = new TripInfoView(this.points, this.#destinationsModel.destinations, this.#offersModel.offers);
     render(this.#tripInfoComponent, this.#containers.tripInfoContainer, RenderPosition.AFTERBEGIN);
   }
 
@@ -117,12 +140,13 @@ export default class TripPresenter {
   #renderNewPoint() {
     this.#newPointPresenter = new NewPointPresenter({
       container: this.#listPoints.element,
+      destinationsModel: this.#destinationsModel,
+      offersModel: this.#offersModel,
       onDataChange: this.#handleViewAction,
       addPointButton: this.#addPointButton,
     });
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
     this.#newPointPresenter.init();
-    //this.#pointPresenters.forEach((presenter) => presenter.resetView());
   }
 
 
@@ -136,7 +160,9 @@ export default class TripPresenter {
     remove(this.#tripInfoComponent);
     remove(this.#sortComponent);
 
-    this.#filterPresenter.destroy();
+    if (this.#filterPresenter) {
+      this.#filterPresenter.destroy();
+    }
     if (this.#newPointPresenter){
       this.#newPointPresenter.destroy();
     }
@@ -187,6 +213,12 @@ export default class TripPresenter {
         break;
       case UpdateType.MAJOR:
         this.#clearTrip({ resetSortType: true });
+        this.#renderTrip();
+        break;
+      case UpdateType.INIT:
+        this.#isLoadingError = data.isError;
+        this.#isLoading = false;
+        this.#clearTrip();
         this.#renderTrip();
         break;
     }
