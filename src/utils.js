@@ -1,12 +1,6 @@
 import dayjs from 'dayjs';
 import {FilterType} from './const';
 
-function getRandomArrayElement(array) {
-  return array[Math.floor(Math.random() * array.length)];
-}
-function getRandomUUID(){
-  return crypto.randomUUID();
-}
 
 function getTimeInDays(startTime, endTime) {
   const days = dayjs(endTime).diff(dayjs(startTime), 'days');
@@ -33,7 +27,7 @@ function sortPointTime(points) {
 }
 
 function sortPointPrice(points) {
-  return points.sort((firstPoint, secondPoint) => secondPoint.basePrice - firstPoint.basePrice);
+  return points.sort((firstPoint, secondPoint) => secondPoint.price - firstPoint.price);
 }
 
 function isDatesEqual(dateA, dateB) {
@@ -65,15 +59,99 @@ const filter = {
   [FilterType.PAST]: (points) => points.filter((point) => isPast(point.dateFrom)),
 };
 
+function updatePoints(points, update) {
+  return points.map((point) => point.id === update.id ? update : point);
+}
+function getDefaultPoint() {
+  const defaultType = 'Flight';
+  return{
+    id: crypto.randomUUID(),
+    price: 0,
+    dateFrom: new Date(dayjs().format('')),
+    dateTo: new Date(dayjs().format('')),
+    destination: '',
+    isFavorite: false,
+    offers: [],
+    type: defaultType
+  };
+}
+
+
+function getTripInfoTitle(cities) {
+  if (cities.length > 3) {
+    return `${cities[0]} &mdash; ... &mdash; ${cities[cities.length - 1]}`;
+  } else {
+    return cities.reduce((acc, city, index) => {
+      if (index !== cities.length - 1) {
+        acc += `${city} &mdash; `;
+      } else {
+        acc += `${city}`;
+      }
+      return acc;
+    }, '');
+  }
+}
+
+function getTripInfoStartDate(sortedPoints) {
+  return dayjs(sortedPoints[0].dateFrom).format('MMM DD');
+}
+
+function getTripInfoEndDate(sortedPoints) {
+  const startDate = sortedPoints[0].dateFrom;
+  const endDate = sortedPoints[sortedPoints.length - 1].dateTo;
+  if (dayjs(startDate).format('MMM') === dayjs(endDate).format('MMM')) {
+    return dayjs(endDate).format('DD');
+  } else {
+    return dayjs(endDate).format('MMM DD');
+  }
+}
+
+function adaptToClient(point) {
+  const adaptedPoint = {
+    ...point,
+    price: point['base_price'],
+    dateFrom: point['date_from'] !== null ? new Date(point['date_from']) : point['date_from'],
+    dateTo: point['date_to'] !== null ? new Date(point['date_to']) : point['date_to'],
+    isFavorite: point['is_favorite']
+  };
+
+  delete adaptedPoint['base_price'];
+  delete adaptedPoint['date_from'];
+  delete adaptedPoint['date_to'];
+  delete adaptedPoint['is_favorite'];
+  return adaptedPoint;
+}
+
+function adaptToServer(point) {
+  const adaptedPoint = {
+    ...point,
+    ['base_price']: point.price,
+    ['date_from']: point.dateFrom instanceof Date ? point.dateFrom.toISOString() : null,
+    ['date_to']: point.dateTo instanceof Date ? point.dateTo.toISOString() : null,
+    ['is_favorite']: point.isFavorite
+  };
+
+  delete adaptedPoint.price;
+  delete adaptedPoint.dateFrom;
+  delete adaptedPoint.dateTo;
+  delete adaptedPoint.isFavorite;
+  return adaptedPoint;
+}
+
 export {
-  getRandomArrayElement,
-  getRandomUUID,
+  adaptToClient,
+  adaptToServer,
+  getDefaultPoint,
   getTimeInDays,
   getTimeInHours,
   getTimeInMinutes,
+  getTripInfoEndDate,
+  getTripInfoStartDate,
+  getTripInfoTitle,
   sortPointTime,
   sortPointPrice,
   sortPointDay,
+  updatePoints,
   isDatesEqual,
   filter,
 };

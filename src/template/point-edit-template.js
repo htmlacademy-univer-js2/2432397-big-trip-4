@@ -1,10 +1,15 @@
 import dayjs from 'dayjs';
-import {DESTINATIONS, POINT_MODE, TYPE_POINTS} from '../const';
+import {POINT_MODE, TYPE_POINTS} from '../const';
 
-export function createPointEditTemplate(point, currentMode){
-  const { type, basePrice, dateFrom, dateTo, destination, offers } = point;
+export function createPointEditTemplate(point, currentMode, offers, destinations){
+  const { type, price, dateFrom, dateTo, offers: currentOffers } = point;
 
-  const { cityName, description, pictures } = destination;
+  const currentDestination = destinations?.find((destination) => destination.id === point.destination);
+  const name = currentDestination ? currentDestination.name : '';
+  const description = currentDestination?.description;
+  const pictures = currentDestination?.pictures;
+
+  const offersByType = offers.find((offer) => offer.type === type.toLowerCase());
 
   return `
   <li class="trip-events__item">
@@ -15,8 +20,8 @@ export function createPointEditTemplate(point, currentMode){
           <label class="event__label  event__type-output" for="event-destination-1">
             ${type}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${cityName}" list="destination-list-1">
-          ${createDestinationList()}
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${name}" list="destination-list-1">
+          ${destinations ? createDestinationList(destinations) : ''}
         </div>
 
         <div class="event__field-group  event__field-group--time">
@@ -32,7 +37,7 @@ export function createPointEditTemplate(point, currentMode){
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${basePrice}">
+          <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${price}">
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -41,14 +46,16 @@ export function createPointEditTemplate(point, currentMode){
         <span class="visually-hidden">Open event</span>` : ''}
       </header>
       <section class="event__details">
-        ${createEditPointOfferTemplate(offers.offers)}
+        <section class="event__section  event__section--offers">
+          ${createPointOffersTemplate(offersByType, currentOffers)}
+         </section>
 
         <section class="event__section  event__section--destination">
         ${description ? `
           <h3 class="event__section-title  event__section-title--destination">Destination</h3>
           <p class="event__destination-description">${description}</p>` : ''}
 
-          ${createEditPointPhotoTemplate(pictures)}
+          ${createPicturesTemplate(pictures)}
         </section>
       </section>
     </form>
@@ -78,35 +85,37 @@ function createEditTypePointTemplate(currentType) {
 }
 
 
-function createDestinationList() {
+function createDestinationList(destinations) {
   return (`<datalist id="destination-list-1">
-           ${DESTINATIONS.map((destination) => `<option value="${destination.name}"></option>`).join('')}
+           ${destinations.map((destination) => `<option value="${destination.name}"></option>`).join('')}
            </datalist>`);
 }
 
-function createEditPointOfferTemplate(offers) {
-  return offers ? (
-    `<section class="event__section  event__section--offers">
-      <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-      <div class="event__available-offers">
-          ${Array.from(new Set(offers)).map((offer) => `<div class="event__offer-selector">
-              <input class="event__offer-checkbox  visually-hidden" id="${offer.id}" type="checkbox" ${offers.includes(offer.id) ? 'checked' : ''}>
-                  <label class="event__offer-label" for="${offer.id}">
-                      <span class="event__offer-title">${offer.title}</span>
-                          &plus;&euro;&nbsp;
-                      <span class="event__offer-price">${offer.price}</span>
-                  </label>
-          </div>`).join('')}
-      </div>
-    </section>
-    `) : '';
+function createPointOffersTemplate(offers, selectedOffers) {
+  if(!offers) {
+    return '';}
+
+  const offerItems = offers.offers.map((offer) => {
+    const offerName = offer.title.replaceAll(' ', '').toLowerCase();
+    return (`<div class="event__offer-selector">
+                <input class="event__offer-checkbox  visually-hidden" type="checkbox" name="event-offer-${offerName}" id="${offer.id}" ${selectedOffers?.includes(offer.id) ? 'checked' : ''}>
+                <label class="event__offer-label" for="${offer.id}">
+                    <span class="event__offer-title">${offer.title}</span>
+                    &plus;&euro;&nbsp;
+                    <span class="event__offer-price">${offer.price}</span>
+                </label>
+            </div>`);
+  }).join('');
+
+  return `<h3 class="event__section-title  event__section-title--offers">Offers</h3>
+          <div class="event__available-offers">${offerItems}</div>`;
 }
 
-function createEditPointPhotoTemplate(pictures) {
-  return pictures !== null ? (
-    `<div class="event__photos-container">
-      <div class="event__photos-tape">
-          ${pictures.map((picture) => `<img class="event__photo" src="${picture.src}" alt="Event photo">`)}
-      </div>
-    </div>`) : '';
+function createPicturesTemplate(pictures) {
+  return !pictures || pictures.length === 0 ? '' :
+    (`<div class="event__photos-container">
+        <div class="event__photos-tape">
+        ${pictures.map((photo) => `<img class="event__photo" src="${photo.src}" alt="${photo.description}">`).join('')}
+        </div>
+      </div>`);
 }

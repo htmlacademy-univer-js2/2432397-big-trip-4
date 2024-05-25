@@ -7,6 +7,8 @@ import {isDatesEqual} from '../utils';
 
 export default class PointPresenter{
   #point = null;
+  #destinationsModel = null;
+  #offersModel = null;
 
   #pointComponent = null;
   #editPointComponent = null;
@@ -16,10 +18,12 @@ export default class PointPresenter{
   #handleDataChange = null;
 
   #pointMode = POINT_MODE.DEFAULT;
-  constructor({container, onDataChange, onModeChange}) {
+  constructor({container, onDataChange, onModeChange, destinationsModel, offersModel}) {
     this.#container = container;
     this.#handleDataChange = onDataChange;
     this.#handleModeChange = onModeChange;
+    this.#destinationsModel = destinationsModel;
+    this.#offersModel = offersModel;
   }
 
   init = (point) =>{
@@ -30,8 +34,10 @@ export default class PointPresenter{
 
     this.#pointComponent = new PointView({
       point: this.#point,
+      destinations: this.#destinationsModel.destinations,
+      pointOffers: this.#offersModel.getByType(point.type),
       onEditClick: this.#replacePointToEditView,
-      onFavouriteClick: this.#handleFavouriteClick,
+      onFavoriteClick: this.#handleFavoriteClick,
     });
 
     this.#editPointComponent = new PointEditView({
@@ -39,6 +45,8 @@ export default class PointPresenter{
       onSaveClick: this.#handleEditPointSave,
       onDeleteClick: this.#handleEditDeletePoint,
       onRollUpClick: this.#replaceEditToPointView,
+      pointsOffers: this.#offersModel.offers,
+      pointsDestinations: this.#destinationsModel.destinations,
     });
 
 
@@ -92,11 +100,11 @@ export default class PointPresenter{
     }
   };
 
-  #handleFavouriteClick = () => {
+  #handleFavoriteClick = () => {
     this.#handleDataChange(
       UserAction.UPDATE_TASK,
       UpdateType.MINOR,
-      {...this.#point, isFavourite: !this.#point.isFavourite}
+      {...this.#point, isFavorite: !this.#point.isFavorite}
     );
   };
 

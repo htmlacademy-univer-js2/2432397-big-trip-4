@@ -7,12 +7,16 @@ export default class NewPointPresenter {
   #newPointComponent = null;
   #handleDataChange = null;
   #addPointButton = null;
-  #mode = null; //??
+  #destinationsModel = null;
+  #offersModel = null;
+  #mode = null;
 
-  constructor({ container, onDataChange, addPointButton }) {
+  constructor({ container, offersModel, destinationsModel, onDataChange, addPointButton }) {
     this.#container = container;
     this.#handleDataChange = onDataChange;
     this.#addPointButton = addPointButton;
+    this.#offersModel = offersModel;
+    this.#destinationsModel = destinationsModel;
     this.#mode = POINT_MODE.CREATING;
   }
 
@@ -25,6 +29,8 @@ export default class NewPointPresenter {
       onSaveClick: this.#handleEditPointSave,
       onDeleteClick: this.#handleEditCancelPoint,
       onRollUpClick: null,
+      pointsOffers: this.#offersModel.offers,
+      pointsDestinations: this.#destinationsModel.destinations,
       mode: this.#mode,
     });
 

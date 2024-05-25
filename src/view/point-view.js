@@ -3,19 +3,24 @@ import AbstractView from '../framework/view/abstract-view';
 
 export default class PointView extends AbstractView{
   #point = null;
+  #destinations = null;
+  #pointOffers = null;
   #handleEditClick = null;
-  #handleFavouriteClick = null;
-  constructor({point, onEditClick, onFavouriteClick}) {
+  #handleFavoriteClick = null;
+  constructor({point, destinations, pointOffers, onEditClick, onFavoriteClick}) {
     super();
     this.#point = point;
+    this.#destinations = destinations;
+    this.#pointOffers = pointOffers;
     this.#handleEditClick = onEditClick;
-    this.#handleFavouriteClick = onFavouriteClick;
+    this.#handleFavoriteClick = onFavoriteClick;
+
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editClickHandler);
-    this.element.querySelector('.event__favorite-btn').addEventListener('click', this.#favouriteClickHandler);
+    this.element.querySelector('.event__favorite-btn').addEventListener('click', this.#favoriteClickHandler);
   }
 
   get template(){
-    return createPointTemplate(this.#point);
+    return createPointTemplate(this.#point, this.#destinations, this.#pointOffers);
   }
 
   #editClickHandler = (evt) => {
@@ -23,8 +28,8 @@ export default class PointView extends AbstractView{
     this.#handleEditClick();
   };
 
-  #favouriteClickHandler = (evt) => {
+  #favoriteClickHandler = (evt) => {
     evt.preventDefault();
-    this.#handleFavouriteClick();
+    this.#handleFavoriteClick();
   };
 }

@@ -1,11 +1,9 @@
 import {createPointEditTemplate} from '../template/point-edit-template';
 import {POINT_MODE} from '../const';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
-import {getMockOffers} from '../mock/offers';
-import {getMockDestination} from '../mock/destination';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
-import {getDefaultPoint} from '../mock/waypoint';
+import {getDefaultPoint} from '../utils';
 
 export default class PointEditView extends AbstractStatefulView{
   static parsePointToState(point) {
@@ -19,14 +17,18 @@ export default class PointEditView extends AbstractStatefulView{
   #saveClickHandler = null;
   #rollUpClickHandler = null;
   #deleteClickHandler = null;
+  #pointsOffers = null;
+  #pointsDestinations = null;
   #datepickerFrom = null;
   #datepickerTo = null;
   #mode = null;
-  constructor({point = getDefaultPoint(), onSaveClick, onDeleteClick, onRollUpClick, mode = POINT_MODE.EDITING}) {
+  constructor({point = getDefaultPoint(), onSaveClick, onDeleteClick, onRollUpClick, pointsOffers, pointsDestinations, mode = POINT_MODE.EDITING}) {
     super();
     this.#saveClickHandler = onSaveClick;
     this.#deleteClickHandler = onDeleteClick;
     this.#rollUpClickHandler = onRollUpClick;
+    this.#pointsOffers = pointsOffers;
+    this.#pointsDestinations = pointsDestinations;
     this.#mode = mode;
     this._setState(PointEditView.parsePointToState(point));
     this._restoreHandlers();
@@ -42,13 +44,13 @@ export default class PointEditView extends AbstractStatefulView{
     this.element.querySelector('.event__input--price').addEventListener('change', this.#priceChangeHandler);
     this.element.querySelector('.event__type-group').addEventListener('change', this.#typeChangeHandler);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler);
-    //this.element.querySelector('.event__available-offers')?.addEventListener('change', this.#offerChangeHandler);
+    this.element.querySelector('.event__available-offers')?.addEventListener('change', this.#offerChangeHandler);
 
     this.#setDatepicker();
   }
 
   get template(){
-    return createPointEditTemplate(this._state, this.#mode);
+    return createPointEditTemplate(this._state, this.#mode, this.#pointsOffers, this.#pointsDestinations);
   }
 
   #editPointRollUpHandler = (evt) => {
@@ -70,7 +72,7 @@ export default class PointEditView extends AbstractStatefulView{
     evt.preventDefault();
     this._setState({
       ...this._state.point,
-      basePrice: evt.target.valueAsNumber
+      price: evt.target.valueAsNumber
     });
   };
 
@@ -79,42 +81,30 @@ export default class PointEditView extends AbstractStatefulView{
     const newType = evt.target.value;
     this.updateElement({
       type: newType,
-      offers: getMockOffers(newType),
+      offers: [],
     });
   };
 
   #destinationChangeHandler = (evt) => {
+    const selectedDestination = this.#pointsDestinations
+      .find((pointDestination) => pointDestination.name === evt.target.value);
+
+    const selectedDestinationId = (selectedDestination)
+      ? selectedDestination.id
+      : null;
+
     this.updateElement({
-      destination: getMockDestination(evt.target.value),
+      destination: selectedDestinationId
     });
   };
 
-  // #destinationChangeHandler = (evt) => {
-  //   const selectedDestination = this.#pointDestinations
-  //     .find((pointDestination) => pointDestination.cityName === evt.target.value);
-  //
-  //   const selectedDestinationId = (selectedDestination)
-  //     ? selectedDestination.id
-  //     : null;
-  //
-  //   this.updateElement({
-  //     point: {
-  //       ...this._state.point,
-  //       destination: selectedDestinationId
-  //     }
-  //   });
-  // };
+  #offerChangeHandler = () => {
+    const checkedBoxes = Array.from(this.element.querySelectorAll('.event__offer-checkbox:checked'));
 
-  // #offerChangeHandler = () => {
-  //   const checkedBoxes = Array.from(this.element.querySelectorAll('.event__offer-checkbox:checked'));
-  //
-  //   this._setState({
-  //     point: {
-  //       ...this._state.point,
-  //       offers: checkedBoxes.map((element) => element.dataset.offerId)
-  //     }
-  //   });
-  // };
+    this._setState({
+      offers: checkedBoxes.map((element) => element.id)
+    });
+  };
 
   #setDatepicker = () => {
     const [dateFromElement, dateToElement] = this.element.querySelectorAll('.event__input--time');
@@ -123,9 +113,6 @@ export default class PointEditView extends AbstractStatefulView{
       dateFormat: 'd/m/y H:i',
       locale: {
         firstDayOfWeek: 1,
-      },
-      parseDate: function(date) {
-        return flatpickr.parseDate(date, 'Y-m-d\\TH:i');
       },
       'time_24hr': true
     };
