@@ -62,6 +62,11 @@ export default class NewPointPresenter {
       });
     };
    // this.#newPointComponent.shake(resetFormState); кидает ошибку тк не видит this.#newPointComponent
+   //  Если в процессе запроса произошла ошибка:
+   //
+   //    разблокируйте форму и интерфейс;
+   //  верните текст кнопок к исходному варианту;
+   //  добавьте всей форме эффект «покачивания головой».
   }
 
   #editPointSaveHandler = (updatedPoint) => {

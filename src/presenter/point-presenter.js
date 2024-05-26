@@ -125,10 +125,6 @@ export default class PointPresenter{
       document.removeEventListener('keydown', this.#escKeyHandler);
       this.#pointMode = POINT_MODE.DEFAULT;
     }
-
-    // replace(this.#pointComponent, this.#editPointComponent);
-    // document.removeEventListener('keydown', this.#escKeyHandler);
-    // this.#pointMode = POINT_MODE.DEFAULT;
   };
 
   #escKeyHandler = (evt) => {
