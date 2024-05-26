@@ -23,9 +23,9 @@ const FilterMessage = {
 };
 
 const UserAction = {
-  UPDATE_TASK: 'UPDATE_TASK',
-  ADD_TASK: 'ADD_TASK',
-  DELETE_TASK: 'DELETE_TASK',
+  UPDATE_POINT: 'UPDATE_POINT',
+  ADD_POINT: 'ADD_POINT',
+  DELETE_POINT: 'DELETE_POINT',
 };
 
 const UpdateType = {
@@ -41,6 +41,19 @@ const POINT_MODE = {
   CREATING: 'CREATING',
 };
 
+const EditPointViewButtonText = {
+  SAVE: 'Save',
+  DELETE: 'Delete',
+  CANCEL: 'Cancel',
+  LOAD_SAVE: 'Saving...',
+  LOAD_DELETE: 'Deleting...'
+};
+
+const TimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000
+};
+
 export {
   TYPE_POINTS,
   SortTypes,
@@ -48,5 +61,7 @@ export {
   FilterMessage,
   UserAction,
   UpdateType,
-  POINT_MODE
+  POINT_MODE,
+  EditPointViewButtonText,
+  TimeLimit,
 };
