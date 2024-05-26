@@ -1,17 +1,6 @@
 import dayjs from 'dayjs';
 import {FilterType} from './const';
 
-const TYPE_POINTS = {
-  TAXI: 'taxi',
-  BUS: 'bus',
-  TRAIN: 'train',
-  SHIP: 'ship',
-  DRIVE: 'drive',
-  FLIGHT: 'flight',
-  CHECK_IN: 'check-in',
-  SIGHTSEEING: 'sightseeing',
-  RESTAURANT: 'restaurant'
-};
 
 function getTimeInDays(startTime, endTime) {
   const days = dayjs(endTime).diff(dayjs(startTime), 'days');
@@ -74,9 +63,8 @@ function updatePoints(points, update) {
   return points.map((point) => point.id === update.id ? update : point);
 }
 function getDefaultPoint() {
-  const defaultType = TYPE_POINTS.FLIGHT;
+  const defaultType = 'flight';
   return{
-    //id: crypto.randomUUID(),
     price: 0,
     dateFrom: new Date(dayjs().format('')),
     dateTo: new Date(dayjs().format('')),
@@ -116,6 +104,21 @@ function getTripInfoEndDate(sortedPoints) {
     return dayjs(endDate).format('MMM DD');
   }
 }
+
+function getOffersCost(offerIds = [], offers = []) {
+  return offerIds.reduce(
+    (result, id) => result + (offers.find((offer) => offer.id === id)?.price ?? 0),
+    0
+  );
+}
+
+function getTripCost(points = [], offers = []) {
+  return points.reduce(
+    (result, point) =>
+      result + point.price + getOffersCost(point.offers, offers.find((offer) => point.type === offer.type)?.offers),
+    0);
+}
+
 
 function adaptToClient(point) {
   const adaptedPoint = {
@@ -163,6 +166,7 @@ export {
   getTripInfoEndDate,
   getTripInfoStartDate,
   getTripInfoTitle,
+  getTripCost,
   sortPointTime,
   sortPointPrice,
   sortPointDay,
