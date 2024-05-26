@@ -2,7 +2,7 @@ import PointView from '../view/point-view';
 import PointEditView from '../view/point-edit-view';
 import {render, replace, remove} from '../framework/render';
 import {UserAction, UpdateType, POINT_MODE} from '../const.js';
-import {isDatesEqual} from '../utils';
+import {isMinorUpdate} from '../utils';
 
 
 export default class PointPresenter{
@@ -61,6 +61,7 @@ export default class PointPresenter{
 
     if (this.#pointMode === POINT_MODE.EDITING) {
       replace(this.#editPointComponent, prevEditPointComponent);
+      //this.#pointMode = POINT_MODE.DEFAULT; ??
     }
 
     remove(prevPointComponent);
@@ -79,6 +80,37 @@ export default class PointPresenter{
     }
   }
 
+  setSaving() {
+    if (this.#pointMode === POINT_MODE.EDITING) {
+      this.#editPointComponent.updateElement({
+        isActive: false,
+        isSaving: true
+      });
+    }
+  }
+
+  setDeleting() {
+    this.#editPointComponent.updateElement({
+      isActive: false,
+      isDeleting: true
+    });
+  }
+
+  setAborting() {
+    if (this.#pointMode === POINT_MODE.EDITING) {
+      const resetFormState = () => {
+        this.#editPointComponent.updateElement({
+          isActive: true,
+          isSaving: false,
+          isDeleting: false
+        });
+      };
+      this.#editPointComponent.shake(resetFormState);
+    } else {
+      this.#editPointComponent.shake();
+    }
+  }
+
   #replacePointToEditView = () => {
     replace(this.#editPointComponent, this.#pointComponent);
     document.addEventListener('keydown', this.#escKeyHandler);
@@ -87,13 +119,20 @@ export default class PointPresenter{
   };
 
   #replaceEditToPointView = () => {
-    replace(this.#pointComponent, this.#editPointComponent);
-    document.removeEventListener('keydown', this.#escKeyHandler);
-    this.#pointMode = POINT_MODE.DEFAULT;
+    if (this.#editPointComponent._state.isActive) {
+      this.#editPointComponent.reset(this.#point);
+      replace(this.#pointComponent, this.#editPointComponent);
+      document.removeEventListener('keydown', this.#escKeyHandler);
+      this.#pointMode = POINT_MODE.DEFAULT;
+    }
+
+    // replace(this.#pointComponent, this.#editPointComponent);
+    // document.removeEventListener('keydown', this.#escKeyHandler);
+    // this.#pointMode = POINT_MODE.DEFAULT;
   };
 
   #escKeyHandler = (evt) => {
-    if (evt.key === 'Escape') {
+    if (evt.key === 'Escape' && this.#editPointComponent._state.isActive) {
       evt.preventDefault();
       this.#editPointComponent.reset(this.#point);
       this.#replaceEditToPointView();
@@ -102,28 +141,30 @@ export default class PointPresenter{
 
   #handleFavoriteClick = () => {
     this.#handleDataChange(
-      UserAction.UPDATE_TASK,
+      UserAction.UPDATE_POINT,
       UpdateType.MINOR,
       {...this.#point, isFavorite: !this.#point.isFavorite}
     );
   };
 
   #handleEditPointSave = (updatedPoint) => {
-    this.#replaceEditToPointView();
-    const isMinorUpdate = isDatesEqual(updatedPoint.dateTo, this.#point.dateTo)
-      || isDatesEqual(updatedPoint.dateFrom, this.#point.dateFrom)
-      || updatedPoint.price === this.#point.price;
+    const isMinor = isMinorUpdate(updatedPoint, this.#point);
 
-    this.#handleDataChange(
-      UserAction.UPDATE_TASK,
-      isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
-      updatedPoint,
-    );
+    if (isMinor) {
+      this.#handleDataChange(
+        UserAction.UPDATE_POINT,
+        isMinor ? UpdateType.MINOR : UpdateType.PATCH,
+        updatedPoint
+      );
+    }
+    if (this.#editPointComponent._state.isActive) {
+      this.#replaceEditToPointView();
+    }
   };
 
   #handleEditDeletePoint = (updatedPoint) => {
     this.#handleDataChange(
-      UserAction.DELETE_TASK,
+      UserAction.DELETE_POINT,
       UpdateType.MINOR,
       updatedPoint,
     );

@@ -7,11 +7,19 @@ import {getDefaultPoint} from '../utils';
 
 export default class PointEditView extends AbstractStatefulView{
   static parsePointToState(point) {
-    return { ...point };
+    return { ...point,
+      isActive: true,
+      isSaving: false,
+      isDeleting: false
+    };
   }
 
-  static parseStateToPoint (state) {
-    return {...state};
+  static parseStateToPoint(state) {
+    const point = {...state};
+    delete point.isActive;
+    delete point.isSaving;
+    delete point.isDeleting;
+    return point;
   }
 
   #saveClickHandler = null;
@@ -51,6 +59,25 @@ export default class PointEditView extends AbstractStatefulView{
 
   get template(){
     return createPointEditTemplate(this._state, this.#mode, this.#pointsOffers, this.#pointsDestinations);
+  }
+
+  removeElement = () => {
+    super.removeElement();
+
+    if (this.#datepickerFrom) {
+      this.#datepickerFrom.destroy();
+      this.#datepickerFrom = null;
+    }
+    if (this.#datepickerTo) {
+      this.#datepickerTo.destroy();
+      this.#datepickerTo = null;
+    }
+  };
+
+  reset(point) {
+    this.updateElement(
+      PointEditView.parsePointToState(point)
+    );
   }
 
   #editPointRollUpHandler = (evt) => {
@@ -155,24 +182,4 @@ export default class PointEditView extends AbstractStatefulView{
     });
     this.#datepickerFrom.set('maxDate', this._state.dateTo);
   };
-
-
-  removeElement = () => {
-    super.removeElement();
-
-    if (this.#datepickerFrom) {
-      this.#datepickerFrom.destroy();
-      this.#datepickerFrom = null;
-    }
-    if (this.#datepickerTo) {
-      this.#datepickerTo.destroy();
-      this.#datepickerTo = null;
-    }
-  };
-
-  reset(point) {
-    this.updateElement(
-      PointEditView.parsePointToState(point)
-    );
-  }
 }

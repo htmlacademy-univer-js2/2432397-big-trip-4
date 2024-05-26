@@ -26,8 +26,8 @@ export default class NewPointPresenter {
     }
 
     this.#newPointComponent = new EditPointView({
-      onSaveClick: this.#handleEditPointSave,
-      onDeleteClick: this.#handleEditCancelPoint,
+      onSaveClick: this.#editPointSaveHandler,
+      onDeleteClick: this.#editPointCancelHandler,
       onRollUpClick: null,
       pointsOffers: this.#offersModel.offers,
       pointsDestinations: this.#destinationsModel.destinations,
@@ -46,17 +46,35 @@ export default class NewPointPresenter {
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   }
 
-  #handleEditPointSave = (updatedPoint) => {
+  setSaving() {
+    this.#newPointComponent.updateElement({
+      isActive: false,
+      isSaving: true
+    });
+  }
+
+  setAborting() {
+    const resetFormState = () => {
+      this.#newPointComponent.updateElement({
+        isActive: true,
+        isSaving: false,
+        isDeleting: false
+      });
+    };
+   // this.#newPointComponent.shake(resetFormState); кидает ошибку тк не видит this.#newPointComponent
+  }
+
+  #editPointSaveHandler = (updatedPoint) => {
     this.#addPointButton.disabled = false;
     this.#handleDataChange(
-      UserAction.ADD_TASK,
+      UserAction.ADD_POINT,
       UpdateType.MAJOR,
       updatedPoint,
     );
     this.destroy();
   };
 
-  #handleEditCancelPoint = () => {
+  #editPointCancelHandler = () => {
     this.#addPointButton.disabled = false;
     this.destroy();
   };

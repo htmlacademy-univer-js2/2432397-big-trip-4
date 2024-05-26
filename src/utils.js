@@ -1,6 +1,17 @@
 import dayjs from 'dayjs';
 import {FilterType} from './const';
 
+const TYPE_POINTS = {
+  TAXI: 'taxi',
+  BUS: 'bus',
+  TRAIN: 'train',
+  SHIP: 'ship',
+  DRIVE: 'drive',
+  FLIGHT: 'flight',
+  CHECK_IN: 'check-in',
+  SIGHTSEEING: 'sightseeing',
+  RESTAURANT: 'restaurant'
+};
 
 function getTimeInDays(startTime, endTime) {
   const days = dayjs(endTime).diff(dayjs(startTime), 'days');
@@ -63,9 +74,9 @@ function updatePoints(points, update) {
   return points.map((point) => point.id === update.id ? update : point);
 }
 function getDefaultPoint() {
-  const defaultType = 'Flight';
+  const defaultType = TYPE_POINTS.FLIGHT;
   return{
-    id: crypto.randomUUID(),
+    //id: crypto.randomUUID(),
     price: 0,
     dateFrom: new Date(dayjs().format('')),
     dateTo: new Date(dayjs().format('')),
@@ -110,8 +121,8 @@ function adaptToClient(point) {
   const adaptedPoint = {
     ...point,
     price: point['base_price'],
-    dateFrom: point['date_from'] !== null ? new Date(point['date_from']) : point['date_from'],
-    dateTo: point['date_to'] !== null ? new Date(point['date_to']) : point['date_to'],
+    dateFrom: point['date_from'],
+    dateTo: point['date_to'],
     isFavorite: point['is_favorite']
   };
 
@@ -126,8 +137,8 @@ function adaptToServer(point) {
   const adaptedPoint = {
     ...point,
     ['base_price']: point.price,
-    ['date_from']: point.dateFrom instanceof Date ? point.dateFrom.toISOString() : null,
-    ['date_to']: point.dateTo instanceof Date ? point.dateTo.toISOString() : null,
+    ['date_from']: new Date(point.dateFrom).toISOString(),
+    ['date_to']: new Date(point.dateTo).toISOString(),
     ['is_favorite']: point.isFavorite
   };
 
@@ -137,7 +148,11 @@ function adaptToServer(point) {
   delete adaptedPoint.isFavorite;
   return adaptedPoint;
 }
-
+function isMinorUpdate(updatedPoint, prevPoint){
+  return isDatesEqual(updatedPoint.dateTo, prevPoint.dateTo)
+    || isDatesEqual(updatedPoint.dateFrom, prevPoint.dateFrom)
+    || updatedPoint.price === prevPoint.price;
+}
 export {
   adaptToClient,
   adaptToServer,
@@ -153,5 +168,6 @@ export {
   sortPointDay,
   updatePoints,
   isDatesEqual,
+  isMinorUpdate,
   filter,
 };
