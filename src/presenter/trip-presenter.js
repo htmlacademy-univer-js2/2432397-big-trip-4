@@ -5,7 +5,7 @@ import {remove, render, RenderPosition} from '../framework/render.js';
 import EmptyListView from '../view/empty-list-view';
 import PointPresenter from './point-presenter';
 import {sortPointTime, sortPointDay, sortPointPrice, filter} from '../utils';
-import {FilterType, SortTypes, TimeLimit, UpdateType, UserAction} from '../const';
+import {SortTypes, TimeLimit, UpdateType, UserAction} from '../const';
 import FilterPresenter from './filter-presenter';
 import NewPointPresenter from './new-point-presenter';
 import UiBlocker from '../framework/ui-blocker/ui-blocker';
@@ -151,7 +151,11 @@ export default class TripPresenter {
       onDataChange: this.#handleViewAction,
       addPointButton: this.#addPointButton,
     });
-    this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+
+    if(this.#emptyListComponent){
+      remove(this.#emptyListComponent);
+      render(this.#listPoints, this.#containers.eventContainer);
+    }
     this.#newPointPresenter.init();
   }
 
