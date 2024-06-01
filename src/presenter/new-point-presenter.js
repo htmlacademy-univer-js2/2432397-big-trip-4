@@ -53,7 +53,7 @@ export default class NewPointPresenter {
     });
   }
 
-  setAborting() {
+  setAborting () {
     const resetFormState = () => {
       this.#newPointComponent.updateElement({
         isActive: true,
@@ -61,12 +61,7 @@ export default class NewPointPresenter {
         isDeleting: false
       });
     };
-   // this.#newPointComponent.shake(resetFormState); кидает ошибку тк не видит this.#newPointComponent
-   //  Если в процессе запроса произошла ошибка:
-   //
-   //    разблокируйте форму и интерфейс;
-   //  верните текст кнопок к исходному варианту;
-   //  добавьте всей форме эффект «покачивания головой».
+    this.#newPointComponent.shake(resetFormState);
   }
 
   #editPointSaveHandler = (updatedPoint) => {
@@ -76,7 +71,6 @@ export default class NewPointPresenter {
       UpdateType.MAJOR,
       updatedPoint,
     );
-    this.destroy();
   };
 
   #editPointCancelHandler = () => {
