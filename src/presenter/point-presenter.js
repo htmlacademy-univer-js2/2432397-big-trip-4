@@ -61,16 +61,17 @@ export default class PointPresenter{
 
     if (this.#pointMode === POINT_MODE.EDITING) {
       replace(this.#editPointComponent, prevEditPointComponent);
-      //this.#pointMode = POINT_MODE.DEFAULT; ??
     }
 
     remove(prevPointComponent);
     remove(prevEditPointComponent);
+    prevEditPointComponent.removeElement();
   };
 
   destroy() {
     remove(this.#pointComponent);
     remove(this.#editPointComponent);
+    this.#editPointComponent.removeElement();
   }
 
   resetView() {

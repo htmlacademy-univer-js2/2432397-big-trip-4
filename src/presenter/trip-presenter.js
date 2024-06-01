@@ -151,7 +151,11 @@ export default class TripPresenter {
       onDataChange: this.#handleViewAction,
       addPointButton: this.#addPointButton,
     });
-    this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+
+    if(this.#emptyListComponent){
+      remove(this.#emptyListComponent);
+      render(this.#listPoints, this.#containers.eventContainer);
+    }
     this.#newPointPresenter.init();
   }
 
