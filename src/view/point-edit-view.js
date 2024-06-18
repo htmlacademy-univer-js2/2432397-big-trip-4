@@ -42,21 +42,6 @@ export default class PointEditView extends AbstractStatefulView{
     this._restoreHandlers();
   }
 
-  _restoreHandlers() {
-    if (this.#mode === POINT_MODE.EDITING) {
-      this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editPointRollUpHandler);
-    }
-    this.element.querySelector('form').addEventListener('submit', this.#editPointSaveHandler);
-    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#editPointDeleteHandler);
-
-    this.element.querySelector('.event__input--price').addEventListener('change', this.#priceChangeHandler);
-    this.element.querySelector('.event__type-group').addEventListener('change', this.#typeChangeHandler);
-    this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler);
-    this.element.querySelector('.event__available-offers')?.addEventListener('change', this.#offerChangeHandler);
-
-    this.#setDatepicker();
-  }
-
   get template(){
     return createPointEditTemplate(this._state, this.#mode, this.#pointsOffers, this.#pointsDestinations);
   }
@@ -78,6 +63,21 @@ export default class PointEditView extends AbstractStatefulView{
     this.updateElement(
       PointEditView.parsePointToState(point)
     );
+  }
+
+  _restoreHandlers() {
+    if (this.#mode === POINT_MODE.EDITING) {
+      this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editPointRollUpHandler);
+    }
+    this.element.querySelector('form').addEventListener('submit', this.#editPointSaveHandler);
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#editPointDeleteHandler);
+
+    this.element.querySelector('.event__input--price').addEventListener('change', this.#priceChangeHandler);
+    this.element.querySelector('.event__type-group').addEventListener('change', this.#typeChangeHandler);
+    this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler);
+    this.element.querySelector('.event__available-offers')?.addEventListener('change', this.#offerChangeHandler);
+
+    this.#setDatepicker();
   }
 
   #editPointRollUpHandler = (evt) => {

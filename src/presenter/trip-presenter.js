@@ -101,6 +101,7 @@ export default class TripPresenter {
       filterContainer: this.#containers.filterContainer,
       filterModel: this.#filterModel,
       pointsModel: this.#pointsModel,
+      addPointButton: this.#addPointButton,
     });
     this.#filterPresenter.init();
   };
@@ -157,6 +158,7 @@ export default class TripPresenter {
       render(this.#listPoints, this.#containers.eventContainer);
     }
     this.#newPointPresenter.init();
+    this.#handleModeChange();
   }
 
 
