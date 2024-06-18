@@ -37,13 +37,13 @@ export default class PointPresenter{
       destinations: this.#destinationsModel.destinations,
       pointOffers: this.#offersModel.getByType(point.type),
       onEditClick: this.#replacePointToEditView,
-      onFavoriteClick: this.#handleFavoriteClick,
+      onFavoriteClick: this.#favoriteClickHandler,
     });
 
     this.#editPointComponent = new PointEditView({
       point: this.#point,
-      onSaveClick: this.#handleEditPointSave,
-      onDeleteClick: this.#handleEditDeletePoint,
+      onSaveClick: this.#editPointSaveHandler,
+      onDeleteClick: this.#editDeletePointHandler,
       onRollUpClick: this.#replaceEditToPointView,
       pointsOffers: this.#offersModel.offers,
       pointsDestinations: this.#destinationsModel.destinations,
@@ -136,7 +136,7 @@ export default class PointPresenter{
     }
   };
 
-  #handleFavoriteClick = () => {
+  #favoriteClickHandler = () => {
     this.#handleDataChange(
       UserAction.UPDATE_POINT,
       UpdateType.MINOR,
@@ -144,7 +144,7 @@ export default class PointPresenter{
     );
   };
 
-  #handleEditPointSave = (updatedPoint) => {
+  #editPointSaveHandler = (updatedPoint) => {
     const isMinor = isMinorUpdate(updatedPoint, this.#point);
 
     if (isMinor) {
@@ -159,7 +159,7 @@ export default class PointPresenter{
     }
   };
 
-  #handleEditDeletePoint = (updatedPoint) => {
+  #editDeletePointHandler = (updatedPoint) => {
     this.#handleDataChange(
       UserAction.DELETE_POINT,
       UpdateType.MINOR,

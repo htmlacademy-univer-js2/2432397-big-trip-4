@@ -7,14 +7,16 @@ export default class FilterPresenter {
   #filterContainer = null;
   #filterModel = null;
   #pointsModel = null;
+  #addPointButton = null;
 
-  constructor({ filterContainer, filterModel, pointsModel }) {
+  constructor({ filterContainer, filterModel, pointsModel, addPointButton }) {
     this.#filterContainer = filterContainer;
     this.#filterModel = filterModel;
     this.#pointsModel = pointsModel;
+    this.#addPointButton = addPointButton;
 
-    this.#filterModel.addObserver(this.#handleModelEvent);
-    this.#pointsModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#modelEventHandler);
+    this.#pointsModel.addObserver(this.#modelEventHandler);
   }
 
   init() {
@@ -22,7 +24,7 @@ export default class FilterPresenter {
 
     this.#filterComponent = new FilterView({
       currentFilterType: this.#filterModel.filterType,
-      onFilterTypeChange: this.#handleFilterTypeChange,
+      onFilterTypeChange: this.#filterTypeChangeHandler,
     });
 
     if (!prevFilterComponent){
@@ -34,19 +36,20 @@ export default class FilterPresenter {
     remove(prevFilterComponent);
   }
 
-  #handleModelEvent = () => {
+  destroy() {
+    remove(this.#filterComponent);
+  }
+
+  #modelEventHandler = () => {
     this.init();
   };
 
-  #handleFilterTypeChange = (filterType) => {
+  #filterTypeChangeHandler = (filterType) => {
+    this.#addPointButton.disabled = false;
     if (filterType === this.#filterModel.filter) {
       return;
     }
 
     this.#filterModel.setFilter(UpdateType.MAJOR, filterType);
   };
-
-  destroy() {
-    remove(this.#filterComponent);
-  }
 }
